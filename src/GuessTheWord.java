@@ -8,6 +8,15 @@ public class GuessTheWord {
 
         String[] words = {"java", "programming", "chocolate", "games"};
         String secretWord = words[random.nextInt(words.length)];
+        int numPlayers;
+        do {
+            System.out.print("Enter the number of players : ");
+            while (!scanner.hasNextInt()) {
+                System.out.print("Invalid input. Please enter a valid number: ");
+                scanner.next();
+            }
+            numPlayers = scanner.nextInt();
+        }while (numPlayers < 2);
 
         char[] guessedWord = new char[secretWord.length()];
         for (int i = 0; i < guessedWord.length; i++) {
