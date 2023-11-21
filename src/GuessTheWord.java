@@ -18,5 +18,12 @@ public class GuessTheWord {
         for (int i = 0; i < secretWord.length(); i++) {
             guessedWord[i] = '_';
         }
+        int currentPlayer = 1;
+        int attempts = 0;
+        boolean wordGuessed = false;
+
+        System.out.println("Welcome to Guess the Word Game !");
+        System.out.println("Player 1, try to guess the word.");
+
     }
 }
