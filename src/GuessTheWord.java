@@ -5,7 +5,7 @@ public class GuessTheWord {
         Scanner scanner = new Scanner(System.in);
         Random random = new Random();
 
-        String[] words = {"java", "programming", "chocolate", "games"};
+        String[] words = {"java", "play", "chocolate", "games", "car","life" };
         String secretWord = words[random.nextInt(words.length)];
         int numPlayers;
         do {
