@@ -6,6 +6,15 @@ public class GuessTheWord {
         Random random = new Random();
 
         String[] words = {"java", "play", "chocolate", "games", "car","life" };
+        String[] hints = {
+                "A versatile programming language.",
+                "An activity for entertainment.",
+                "A sweet treat made from cocoa.",
+                "Fun activities with rules.",
+                "A vehicle with wheels.",
+                "The existence of an individual."
+        };
+
         String secretWord = words[random.nextInt(words.length)];
         int numPlayers;
         do {
