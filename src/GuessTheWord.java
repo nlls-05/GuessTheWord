@@ -15,6 +15,9 @@ public class GuessTheWord {
         words.add("games");
         words.add("car");
         words.add("life");
+        words.add("mountain");
+        words.add("ocean");
+        words.add("computer");
         // Add more words as needed
 
         List<String> hints = new ArrayList<>();
@@ -24,11 +27,13 @@ public class GuessTheWord {
         hints.add("Fun activities with rules.");
         hints.add("A vehicle with wheels.");
         hints.add("The existence of an individual.");
+        hints.add("A large landform that rises prominently above its surroundings.");
+        hints.add("A vast expanse of saltwater.");
+        hints.add("An electronic device for processing data.");
         // Add more hints as needed
 
         List<String> playerNames = new ArrayList<>();
         List<Integer> playerPoints = new ArrayList<>();
-        List<Boolean> wordGuessed = new ArrayList<>();
 
         System.out.print("Enter the number of players: ");
         int numPlayers = scanner.nextInt();
@@ -39,22 +44,19 @@ public class GuessTheWord {
             String playerName = scanner.nextLine();
             playerNames.add(playerName);
             playerPoints.add(0);
-            wordGuessed.add(false);
         }
-
-        int currentPlayer = random.nextInt(numPlayers);
 
         System.out.println("Welcome to Beautiful Guess the Word Game!");
         System.out.println("Try to guess the word.");
 
-        while (!(allWordsGuessed(wordGuessed) || anyPlayerEliminated(playerPoints))) {
-            clearScreen();
-            String secretWord = words.get(random.nextInt(words.size()));
-            String hint = hints.get(words.indexOf(secretWord));
+        while (!(anyPlayerReached1000(playerPoints))) {
+            for (int i = 0; i < numPlayers; i++) {
+                clearScreen();
+                String secretWord = getUniqueWord(new ArrayList<>(words), random);
+                String hint = hints.get(words.indexOf(secretWord));
 
-            playRound(scanner, playerNames, playerPoints, wordGuessed, currentPlayer, secretWord, hint);
-
-            currentPlayer = (currentPlayer + 1) % numPlayers; // Switch to the next player
+                playRound(scanner, playerNames, playerPoints, secretWord, hint, i);
+            }
         }
 
         clearScreen();
@@ -69,45 +71,46 @@ public class GuessTheWord {
         scanner.close();
     }
 
-    private static boolean anyPlayerEliminated(List<Integer> playerPoints) {
+    private static boolean anyPlayerReached1000(List<Integer> playerPoints) {
+        for (int points : playerPoints) {
+            if (points >= 1000) {
+                return true;
+            }
+        }
         return false;
     }
 
     private static void playRound(Scanner scanner, List<String> playerNames, List<Integer> playerPoints,
-                                  List<Boolean> wordGuessed, int currentPlayer, String secretWord, String hint) {
+                                  String secretWord, String hint, int currentPlayer) {
         System.out.println("Hint: " + hint);
 
-        while (!wordGuessed.get(currentPlayer)) {
-            displayGameInfo(playerNames, playerPoints, currentPlayer);
+        displayGameInfo(playerNames, playerPoints, currentPlayer);
 
-            System.out.print(playerNames.get(currentPlayer) + ", enter one or more letters or the entire word: ");
-            String guess = scanner.nextLine().toLowerCase();
+        System.out.print(playerNames.get(currentPlayer) + ", enter one or more letters or the entire word: ");
+        String guess = scanner.nextLine().toLowerCase();
 
-            if (guess.length() == 1) {
-                char letter = guess.charAt(0);
-                if (isGuessCorrect(letter, secretWord, playerPoints, currentPlayer)) {
-                    clearScreen();
-                    System.out.println("Correct guess!");
-                    displayWord(secretWord, playerPoints.get(currentPlayer));
-                    continue; // Player gets another turn
-                } else {
-                    clearScreen();
-                    System.out.println("Incorrect guess.");
-                }
-            } else if (guess.length() == secretWord.length() && guess.equals(secretWord)) {
-                wordGuessed.set(currentPlayer, true);
-                playerPoints.set(currentPlayer, playerPoints.get(currentPlayer) + 1000); // Adjust points for guessing the entire word
+        if (guess.length() == 1) {
+            char letter = guess.charAt(0);
+            if (isGuessCorrect(letter, secretWord)) {
                 clearScreen();
-                System.out.println("Congratulations! " + playerNames.get(currentPlayer) +
-                        " guessed the word: " + secretWord);
-                displayScores(playerNames, playerPoints);
-                break; // Player wins and the round ends
-            } else if (guess.length() >= 2) {
-                processMultipleLetters(guess, secretWord, playerPoints, currentPlayer, playerNames);
+                System.out.println("Correct guess!");
+                displayWord(secretWord, playerPoints, currentPlayer);
             } else {
                 clearScreen();
-                System.out.println("Invalid input. Please enter one or more letters or the entire word.");
+                System.out.println("Incorrect guess.");
             }
+        } else if (guess.length() == secretWord.length() && guess.equals(secretWord)) {
+            int pointsEarned = secretWord.length() * 50;
+            playerPoints.set(currentPlayer, playerPoints.get(currentPlayer) + pointsEarned);
+            clearScreen();
+            System.out.println("Congratulations! " + playerNames.get(currentPlayer) +
+                    " guessed the word: " + secretWord);
+            displayScores(playerNames, playerPoints);
+        } else if (guess.length() >= 2) {
+            processMultipleLetters(guess, secretWord, playerPoints, currentPlayer, playerNames);
+        } else {
+            clearScreen();
+            System.out.println("Invalid input. Please enter one or more letters or the entire word.");
         }
     }
 
@@ -116,9 +119,11 @@ public class GuessTheWord {
         displayScores(playerNames, playerPoints);
     }
 
-    private static void processMultipleLetters(String guess, String secretWord, List<Integer> playerPoints, int currentPlayer, List<String> playerNames) {
+    private static void processMultipleLetters(String guess, String secretWord, List<Integer> playerPoints,
+                                               int currentPlayer, List<String> playerNames) {
         if (guess.equals(secretWord)) {
-            playerPoints.set(currentPlayer, playerPoints.get(currentPlayer) + 1000); // Adjust points for guessing the entire word
+            int pointsEarned = secretWord.length() * 50;
+            playerPoints.set(currentPlayer, playerPoints.get(currentPlayer) + pointsEarned);
             clearScreen();
             System.out.println("Congratulations! " + playerNames.get(currentPlayer) +
                     " guessed the word: " + secretWord);
@@ -129,26 +134,13 @@ public class GuessTheWord {
         }
     }
 
-    private static boolean isGuessCorrect(char guess, String secretWord, List<Integer> playerPoints, int currentPlayer) {
-        boolean correctGuess = false;
-
+    private static boolean isGuessCorrect(char guess, String secretWord) {
         for (int i = 0; i < secretWord.length(); i++) {
             if (secretWord.charAt(i) == guess) {
-                playerPoints.set(currentPlayer, playerPoints.get(currentPlayer) + 10); // Adjust points for correct letter guess
-                correctGuess = true;
+                return true;
             }
         }
-
-        return correctGuess;
-    }
-
-    private static boolean allWordsGuessed(List<Boolean> wordGuessed) {
-        for (boolean guessed : wordGuessed) {
-            if (!guessed) {
-                return false;
-            }
-        }
-        return true;
+        return false;
     }
 
     private static void displayScores(List<String> playerNames, List<Integer> playerPoints) {
@@ -159,10 +151,11 @@ public class GuessTheWord {
         System.out.println();
     }
 
-    private static void displayWord(String secretWord, int playerPoints) {
+    private static void displayWord(String secretWord, List<Integer> playerPoints, int currentPlayer) {
         System.out.println("Word: " + secretWord.toUpperCase());
-        System.out.println("Points for the word: 1000 points");
-        System.out.println("Total Points: " + playerPoints + " points\n");
+        int pointsEarned = secretWord.length() * 50;
+        System.out.println("Points for the word: " + pointsEarned + " points");
+        System.out.println("Total Points: " + playerPoints.get(currentPlayer) + " points\n");
     }
 
     private static void clearScreen() {
@@ -193,5 +186,16 @@ public class GuessTheWord {
         }
 
         return winnerIndex;
+    }
+
+    private static String getUniqueWord(List<String> words, Random random) {
+        if (words.isEmpty()) {
+            return null;
+        }
+
+        int index = random.nextInt(words.size());
+        String selectedWord = words.get(index);
+        words.remove(index);
+        return selectedWord;
     }
 }
