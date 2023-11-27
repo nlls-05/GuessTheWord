@@ -18,6 +18,10 @@ public class GuessTheWord {
         words.add("mountain");
         words.add("ocean");
         words.add("computer");
+        words.add("fridge");
+        words.add("football");
+
+
 
         List<String> hints = new ArrayList<>();
         hints.add("A versatile programming language.");
@@ -29,6 +33,8 @@ public class GuessTheWord {
         hints.add("A large landform that rises prominently above its surroundings.");
         hints.add("A vast expanse of saltwater.");
         hints.add("An electronic device for processing data.");
+        hints.add("a thing that keeps food cool.");
+        hints.add("a sport that is played with 2 teams for 90 mins.");
 
         List<String> playerNames = new ArrayList<>();
         List<Integer> playerPoints = new ArrayList<>();
