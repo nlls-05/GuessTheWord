@@ -163,20 +163,11 @@ public class GuessTheWord {
     }
 
     private static void clearScreen() {
-        // Code to clear the console screen, depending on the environment
-        try {
-            final String os = System.getProperty("os.name");
-            if (os.contains("Windows")) {
-                new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
-            } else {
+
                 System.out.print("\033[H\033[2J");
                 System.out.flush();
             }
-        } catch (Exception e) {
-            // Handle exceptions if unable to clear the screen
-            System.out.println("Unable to clear the screen.");
-        }
-    }
+
 
     private static int findWinner(List<Integer> playerPoints) {
         int maxPoints = -1;
